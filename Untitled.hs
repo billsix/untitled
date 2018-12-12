@@ -73,8 +73,10 @@ data SignedInteger = Positive PeanoInteger | Negative PeanoInteger
 
 instance Eq SignedInteger where
          (==) = signedIntegerEqual where
-              signedIntegerEqual (Positive x) (Positive y) = x == y
-              signedIntegerEqual (Negative x) (Negative y) = x == y
+              signedIntegerEqual (Positive x)    (Positive y)    = x == y
+              signedIntegerEqual (Negative x)    (Negative y)    = x == y
+              signedIntegerEqual (Positive Zero) (Negative Zero) = True
+              signedIntegerEqual (Negative Zero) (Positive Zero) = True
               signedIntegerEqual _ _ = False
 {------}
 
