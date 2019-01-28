@@ -53,7 +53,7 @@ and :: (Bool -> (Bool -> Bool))
 and True True   = True
 and True False  = False
 and False True  = False
-and False False = True
+and False False = False
 {------}
 
 {-= Equality-}
