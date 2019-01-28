@@ -36,15 +36,31 @@ module Untitled where
 
 {-[source,Haskell,linenums]-}
 {------}
-import Prelude hiding (subtract, and)
+import Prelude hiding (subtract, and, or, not)
 {------}
 
 
 {-[source,Haskell]-}
 {------}
-{-data Boolean = True | False-}
-{-     deriving (Show)-}
+{-data Bool = True | False-}
 {------}
+
+
+{-[source,Haskell]-}
+{------}
+{-instance Show Bool where-}
+{-    show True = "True"-}
+{-    show False = "False"-}
+{------}
+
+
+{-[source,Haskell]-}
+{------}
+not :: (Bool -> Bool)
+not True   = False
+not False  = True
+{------}
+
 
 
 {-[source,Haskell]-}
@@ -55,6 +71,26 @@ and True False  = False
 and False True  = False
 and False False = False
 {------}
+
+
+{-[source,Haskell]-}
+{------}
+or :: (Bool -> (Bool -> Bool))
+or True True   = True
+or True False  = True
+or False True  = True
+or False False = False
+{------}
+
+{-[source,Haskell]-}
+{------}
+xor :: (Bool -> (Bool -> Bool))
+xor True True   = False
+xor True False  = True
+xor False True  = True
+xor False False = False
+{------}
+
 
 {-= Equality-}
 
@@ -99,11 +135,10 @@ and False False = False
 {-[source,Haskell]-}
 {------}
 {-instance Eq Boolean where-}
-{-         (==) = booleanEqual where-}
-{-              booleanEqual True  True  = True-}
-{-              booleanEqual True  False = False-}
-{-              booleanEqual False True  = False-}
-{-              booleanEqual False False = True-}
+{-    True  == True  = True-}
+{-    True  == False = False-}
+{-    False == True  = False-}
+{-    False == False = True-}
 {------}
 
 {-== Substitiuon-}
@@ -114,7 +149,13 @@ and False False = False
 {-[source,Haskell,linenums]-}
 {------}
 data PeanoInteger = Zero | Succ PeanoInteger
-     deriving (Show)
+{------}
+
+{-[source,Haskell]-}
+{------}
+instance Show PeanoInteger where
+    show Zero = "Zero"
+    show (Succ x) = "Succ (" ++ (show x) ++ ")"
 {------}
 
 
@@ -122,12 +163,35 @@ data PeanoInteger = Zero | Succ PeanoInteger
 {-[source,Haskell,linenums]-}
 {------}
 instance Eq PeanoInteger where
-         (==) = peanoIntegerEqual where
-              peanoIntegerEqual Zero Zero         = True
-              peanoIntegerEqual Zero (Succ a)     = False
-              peanoIntegerEqual (Succ a) Zero     = False
-              peanoIntegerEqual (Succ a) (Succ b) = peanoIntegerEqual a b
+     Zero     == Zero     = True
+     Zero     == (Succ a) = False
+     (Succ a) == Zero     = False
+     (Succ a) == (Succ b) = a == b
 {------}
+
+{-= Enumerations-}
+
+{-[source,Haskell,linenums]-}
+{------}
+instance Enum PeanoInteger where
+     fromEnum Zero = 0
+     fromEnum (Succ x) = (fromEnum x) + 1
+
+     toEnum 0 = Zero
+     toEnum x = Succ (toEnum (x - 1))
+{------}
+
+{-[source,Haskell,linenums]-}
+{------}
+peanoIntegers = enumFrom Zero
+{------}
+
+{-[source,Haskell]-}
+{------}
+{-take 5 peanoIntegers-}
+{-[Zero,Succ (Zero),Succ (Succ (Zero)),Succ (Succ (Succ (Zero))),Succ (Succ (Succ (Succ (Zero))))]-}
+{------}
+
 
 {-[source,Haskell,linenums]-}
 {------}
@@ -147,18 +211,6 @@ multiply a (Succ b) = add a (multiply a b)
 
 {-= Plots-}
 
-{-= Enumerations-}
-
-{-[source,Haskell,linenums]-}
-{------}
-instance Enum PeanoInteger where
-         fromEnum = peanoIntegerFromEnum where
-                  peanoIntegerFromEnum Zero = 0
-                  peanoIntegerFromEnum (Succ x) = (peanoIntegerFromEnum x) + 1
-         toEnum = peanoIntegerToEnum where
-                  peanoIntegerToEnum 0 = Zero
-                  peanoIntegerToEnum x = Succ (peanoIntegerToEnum (x - 1))
-{------}
 
 {-= Signed Integers-}
 
@@ -170,12 +222,11 @@ data SignedInteger = Positive PeanoInteger | Negative PeanoInteger
 
 
 instance Eq SignedInteger where
-         (==) = signedIntegerEqual where
-              signedIntegerEqual (Positive x)    (Positive y)    = x == y
-              signedIntegerEqual (Negative x)    (Negative y)    = x == y
-              signedIntegerEqual (Positive Zero) (Negative Zero) = True
-              signedIntegerEqual (Negative Zero) (Positive Zero) = True
-              signedIntegerEqual _ _ = False
+     (Positive x)    == (Positive y)    = x == y
+     (Negative x)    == (Negative y)    = x == y
+     (Positive Zero) == (Negative Zero) = True
+     (Negative Zero) == (Positive Zero) = True
+     _               == _               = False
 {------}
 
 
