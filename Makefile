@@ -1,14 +1,12 @@
-all: Untitled.html untitled
+all: untitled untitled.pdf
 
-untitled: Untitled.hs
+untitled: untitled.tex
 	ghc Untitled.hs Main.hs -o untitled
 
+untitled.tex: Untitled.hs
+	./hs2tex Untitled.hs untitled.tex
 
-
-Untitled.html: Untitled.adoc
-	asciidoc -b html5 -a icons -a toc2 -a theme=flask -n Untitled.adoc
-
-
-Untitled.adoc:  Untitled.hs
-	sed -e 's/^{-//g' Untitled.hs > Untitled.adoc
-	sed -i -e 's/\-}//g' Untitled.adoc
+untitled.pdf: untitled.tex
+	git log | head  -n 1 | cut -d ' ' -f 2   > version.tex
+	pdflatex untitled.tex
+	pdflatex untitled.tex
